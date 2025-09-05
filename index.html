@@ -2,60 +2,54 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <title>Etkinlik: Doğru Öğrenciyi Seç</title>
+  <title>Bir Kelime Oyunu (Sınıf Versiyonu)</title>
   <style>
-    :root { --bg-color: #f0f8ff; }
     body {
-      background-color: var(--bg-color);
       font-family: Arial, sans-serif;
+      background-color: #f0f8ff;
       margin: 0;
       padding: 0;
       display: flex;
       justify-content: center;
-      align-items: center;
-      height: 100vh;
-      transition: background-color 0.5s;
+      align-items: flex-start;
+      min-height: 100vh;
     }
     .kapsayici {
-      text-align: center;
       background-color: white;
-      padding: 30px;
+      margin-top: 20px;
+      padding: 20px;
       border-radius: 12px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-      width: 90%;
-      max-width: 700px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      width: 95%;
+      max-width: 850px;
+      text-align: center;
+    }
+    textarea, input[type="text"] {
+      padding: 6px;
+      font-size: 14px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
     }
     textarea {
       width: 100%;
-      height: 150px;
-      font-size: 16px;
-      padding: 10px;
-      border-radius: 8px;
-      margin-bottom: 15px;
+      height: 100px;
       resize: none;
     }
     .hidden { display: none; }
     .btn {
-      padding: 10px 20px;
-      font-size: 16px;
-      margin: 10px 5px;
+      padding: 8px 14px;
+      font-size: 14px;
+      margin: 5px;
       cursor: pointer;
       background-color: #4CAF50;
       color: white;
       border: none;
-      border-radius: 8px;
-      transition: background-color 0.3s;
-    }
-    .btn:hover { background-color: #45a049; }
-    #sonSayi {
-      font-size: 50px;
-      font-weight: bold;
-      margin: 20px 0;
-      color: #333;
+      border-radius: 6px;
     }
     .ogrenci-listesi {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
       gap: 10px;
       margin-top: 25px;
       max-height: 300px;
@@ -63,201 +57,216 @@
       padding: 10px;
     }
     .ogrenci {
-  font-size: 13px;
-  padding: 6px;
-  min-height: 50px;
+      width: 70px;
+      height: 60px;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
+      padding: 8px;
       background-color: #e0e0e0;
-      border: 2px solid #ccc;
-      border-radius: 10px;
-      padding: 10px;
-      min-height: 70px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      user-select: none;
-      min-width: 100px;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: center;
+      transition: 0.3s;
     }
-    .ogrenci:hover { transform: scale(1.05); }
+    .ogrenci:hover {
+      transform: scale(1.05);
+    }
     .dogru {
       background-color: #ffcc80 !important;
       font-weight: bold;
       box-shadow: 0 0 8px rgba(0,0,0,0.2);
     }
-    .puan {
-      font-size: 14px;
-      color: #444;
-      margin-top: 5px;
+    #harfKutulari {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
     }
+    .box {
+      width: 50px;
+      height: 50px;
+      background-color: #3498db;
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+    }
+    #puanTablosu {
+      margin-top: 20px;
+    }
+    table {
+      width: 60%;
+      margin: 0 auto;
+      border-collapse: collapse;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 6px 10px;
+      font-size: 14px;
+      text-align: center;
+    }
+    .ilk-uc-wrapper {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 10px 0;
+    }
+    .ilk-uc-kutu {
+      background-color: #fff9c4;
+      border: 2px solid #ccc;
+      border-radius: 12px;
+      padding: 10px;
+      width: 120px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      text-align: center;
+      font-weight: bold;
+    }
+    .ilk-1 { background-color: #ffe082; }
+    .ilk-2 { background-color: #e0e0e0; }
+    .ilk-3 { background-color: #d7ccc8; }
   </style>
 </head>
 <body>
   <div class="kapsayici">
-    <div id="girisAlani">
-      <p>Etkinlik başlığını ve öğrenci adlarını gir:</p>
-      <input type="text" id="baslikInput" placeholder="Etkinlik Başlığı (örn: Sayıyı Kim Yaptı?)" style="width:100%; padding:10px; margin-bottom:10px; font-size:16px; border-radius:8px; border:1px solid #ccc;" />
-      <textarea id="ogrenciTextarea" placeholder="Örnek:
-Ayşe
-Ali
-Zeynep"></textarea><br>
-      <button class="btn" onclick="basla()">Başla</button>
+    <div id="girisEkrani">
+      <h3>📝 Öğrenci Adlarını Girin:</h3>
+      <textarea id="ogrenciTextarea" placeholder="Öğrenci isimlerini her satıra bir tane olacak şekilde yazınız."></textarea><br>
+      <button class="btn" onclick="basla()">BAŞLA</button>
     </div>
-    <div id="oyunAlani" class="hidden">
-      <h2 id="baslikAlani"></h2>
-      <div style="margin-bottom: 15px;">
-        <input type="number" id="minBasamak" min="1" max="9" placeholder="Minimum basamak" style="width: 80px; padding:6px; font-size:14px; border-radius:6px; border:1px solid #ccc; margin-right:5px;">
-        <input type="number" id="maxBasamak" min="1" max="9" placeholder="Maksimum basamak" style="width: 80px; padding:6px; font-size:14px; border-radius:6px; border:1px solid #ccc;">
-      </div>
-      <button class="btn" onclick="sayiUret()">Sayı Üret</button>
-      <div id="sonSayi">–</div>
+
+    <div id="oyunEkrani" class="hidden">
+      <h2>🎯 Bir Kelime Bir İşlem 🎯</h2>
+      <div id="harfKutulari"></div>
+      <button class="btn" onclick="harfleriUret()">🔤 Harfleri Üret</button>
+      <button class="btn" onclick="kelimeleriGoster()">📋 Kelimeleri Göster</button>
+      <button class="btn" onclick="togglePuanTablosu()">📊 Puan Tablosunu Göster/Gizle</button>
+
       <div class="ogrenci-listesi" id="ogrenciler"></div>
-<div style="margin-top: 20px;">
-  <button class="btn" onclick="puanlariSifirla()" style="background-color: #d32f2f;">Puanları Sıfırla</button>
-  
-</div>
 
-<button class="btn" onclick="bitirYarismayi()" style="background-color:#ff8f00;">🏁 Bitir</button>
+      <div id="kelimeSonuclari">Kelime sonuçları burada görünecek.</div>
 
-<button class="btn" onclick="togglePuanTablosu()" style="background-color:#6a1b9a;">Puan Tablosunu Göster / Gizle</button>
-<div id="puanTablosu" style="margin-top:20px; font-size:15px; display:none;"></div>
-
+      <div id="puanTablosu" class="hidden">
+        <h4>📊 Puan Tablosu</h4>
+        <div class="ilk-uc-wrapper" id="ilkUc"></div>
+        <table>
+          <thead><tr><th>İsim</th><th>Puan</th></tr></thead>
+          <tbody id="puanTabloGovde"></tbody>
+        </table>
+      </div>
     </div>
   </div>
+
   <script>
-    const arkaPlanRenkleri = [
-      "#f0f8ff", "#e8f5e9", "#fffde7", "#fce4ec", "#f3e5f5",
-      "#ede7f6", "#e0f7fa", "#f1f8e9", "#fbe9e7", "#f9fbe7"
-    ];
-    let ogrenciSkorlari = {};
-    let seciliOgrenciler = [];
-guncellePuanTablosu();
+    const alfabe = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ";
+    let ogrenciler = [];
+    let puanlar = {};
+    let sozluk = [];
+    let mevcutHarfler = [];
+
     function basla() {
-      const textarea = document.getElementById("ogrenciTextarea");
-      const isimler = textarea.value.split('\n').map(i => i.trim()).filter(i => i !== "");
-      if (isimler.length === 0) {
-        alert("Lütfen en az bir öğrenci adı girin.");
+      const metin = document.getElementById("ogrenciTextarea").value.trim();
+      if (!metin) {
+        alert("Lütfen öğrenci isimlerini girin.");
         return;
       }
-      const ogrenciListesi = document.getElementById("ogrenciler");
-      ogrenciListesi.innerHTML = "";
-      ogrenciSkorlari = {};
-      isimler.forEach(isim => {
-        ogrenciSkorlari[isim] = 0;
+      ogrenciler = metin.split('\n').map(i => i.trim()).filter(i => i);
+      puanlar = {};
+      document.getElementById("girisEkrani").classList.add("hidden");
+      document.getElementById("oyunEkrani").classList.remove("hidden");
+
+      const ogrenciAlani = document.getElementById("ogrenciler");
+      ogrenciAlani.innerHTML = "";
+      ogrenciler.forEach(isim => {
+        puanlar[isim] = 0;
         const div = document.createElement("div");
         div.className = "ogrenci";
-        div.dataset.isim = isim;
-        const adEl = document.createElement("div");
-        adEl.textContent = isim;
-        const puanEl = document.createElement("div");
-        puanEl.className = "puan";
-        puanEl.textContent = "Puan: 0";
-        div.appendChild(adEl);
-        div.appendChild(puanEl);
+        div.textContent = isim;
         div.onclick = function () {
-          if (!div.classList.contains("dogru")) {
-            div.classList.add("dogru");
-            ogrenciSkorlari[isim]++;
-            puanEl.textContent = `Puan: ${ogrenciSkorlari[isim]}`;
-            seciliOgrenciler.push(isim);
+          const harfSayisi = prompt(`${isim} kaç harfli kelime buldu?`);
+          const puan = parseInt(harfSayisi) * 10;
+          if (!isNaN(puan)) {
+            puanlar[isim] += puan;
+            guncellePuanTablosu();
           }
         };
-        ogrenciListesi.appendChild(div);
+        ogrenciAlani.appendChild(div);
       });
-      document.getElementById("girisAlani").classList.add("hidden");
-      document.getElementById("oyunAlani").classList.remove("hidden");
-      const baslik = document.getElementById("baslikInput").value || "Etkinlik";
-      
-      document.getElementById("baslikAlani").textContent = baslik;
-    }
-    function sayiUret() {
-      const minBasamak = parseInt(document.getElementById("minBasamak").value);
-      const maxBasamak = parseInt(document.getElementById("maxBasamak").value);
-      if (isNaN(minBasamak) || isNaN(maxBasamak) || minBasamak < 1 || maxBasamak > 9 || minBasamak > maxBasamak) {
-        alert("Lütfen 1 ile 9 arasında geçerli bir basamak aralığı girin.");
-        return;
-      }
-      const minDeger = Math.pow(10, minBasamak - 1);
-      const maxDeger = Math.pow(10, maxBasamak) - 1;
-      const sayi = Math.floor(Math.random() * (maxDeger - minDeger + 1)) + minDeger;
-      document.getElementById("sonSayi").textContent = sayi;
-      const kutular = document.querySelectorAll(".ogrenci");
-      kutular.forEach(div => div.classList.remove("dogru"));
-      const rastgeleRenk = arkaPlanRenkleri[Math.floor(Math.random() * arkaPlanRenkleri.length)];
-      document.body.style.backgroundColor = rastgeleRenk;
-      seciliOgrenciler = [];
-guncellePuanTablosu();
-    }
-  
-    function puanlariSifirla() {
-      Object.keys(ogrenciSkorlari).forEach(isim => {
-        ogrenciSkorlari[isim] = 0;
-      });
-      document.querySelectorAll(".ogrenci").forEach(div => {
-        const puanEl = div.querySelector(".puan");
-        if (puanEl) puanEl.textContent = "Puan: 0";
-        div.classList.remove("dogru");
-      });
+
       guncellePuanTablosu();
     }
 
+    function harfleriUret() {
+      mevcutHarfler = [];
+      for (let i = 0; i < 8; i++) mevcutHarfler.push(alfabe[Math.floor(Math.random() * alfabe.length)]);
+      mevcutHarfler.push("*");
+      document.getElementById("harfKutulari").innerHTML = mevcutHarfler.map(h => `<div class="box">${h}</div>`).join('');
+      document.getElementById("kelimeSonuclari").textContent = "Kelime sonuçları burada görünecek.";
+    }
+
+    function kelimeOlurMu(kelime, harfler) {
+      let kopya = [...harfler];
+      let joker = false;
+      for (let harf of kelime) {
+        if (kopya.includes(harf)) {
+          kopya.splice(kopya.indexOf(harf), 1);
+        } else if (!joker && kopya.includes('*')) {
+          kopya.splice(kopya.indexOf('*'), 1);
+          joker = true;
+        } else {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function kelimeleriGoster() {
+      if (mevcutHarfler.length === 0) return alert("Lütfen önce harfleri üretin!");
+      const harfler = mevcutHarfler.map(h => h.toLocaleUpperCase("tr"));
+      const bulunan = sozluk.filter(k => k.length >= 4 && kelimeOlurMu(k, harfler)).sort((a,b) => b.length - a.length);
+      document.getElementById("kelimeSonuclari").textContent = bulunan.length > 0 ? bulunan.join(", ") : "Uygun kelime bulunamadı.";
+    }
+
     function guncellePuanTablosu() {
-      const tablo = document.getElementById("puanTablosu");
-      const sirali = Object.entries(ogrenciSkorlari).sort((a,b) => b[1] - a[1]);
-      let html = "<h3>🏆 Puan Tablosu</h3><ol>";
-      sirali.forEach(([isim, puan]) => {
-        html += `<li>${isim}: ${puan} puan</li>`;
+      const govde = document.getElementById("puanTabloGovde");
+      const ilkUcDiv = document.getElementById("ilkUc");
+      govde.innerHTML = "";
+      ilkUcDiv.innerHTML = "";
+
+      const sirali = Object.entries(puanlar).sort((a,b) => b[1] - a[1]);
+
+      sirali.slice(0,3).forEach((entry, index) => {
+        const div = document.createElement("div");
+        div.className = `ilk-uc-kutu ilk-${index+1}`;
+        const madalya = ["🥇", "🥈", "🥉"][index] || "";
+        div.innerHTML = `${madalya}<br>${entry[0]}<br><span style='font-size:13px;'>${entry[1]} puan</span>`;
+        ilkUcDiv.appendChild(div);
       });
-      html += "</ol>";
-      tablo.innerHTML = html;
-    }
 
-    function sinifListesiniKaydet() {
-      const isimler = Object.keys(ogrenciSkorlari);
-      const blob = new Blob([isimler.join("\n")], { type: "text/plain" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "sinif-listesi.txt";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      sirali.slice(3).forEach(([isim, puan]) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${isim}</td><td>${puan}</td>`;
+        govde.appendChild(tr);
+      });
     }
-
 
     function togglePuanTablosu() {
-      const tablo = document.getElementById("puanTablosu");
-      tablo.style.display = (tablo.style.display === "none") ? "block" : "none";
+      document.getElementById("puanTablosu").classList.toggle("hidden");
     }
 
-
-function rastgeleOgrenciSec() {
-  if (ogrenciler.length === 0) return;
-  const secilen = ogrenciler[Math.floor(Math.random() * ogrenciler.length)];
-  document.getElementById("rastgeleSecilen").textContent = "Seçilen Öğrenci: " + secilen;
-}
-
-
-
-
-function bitirYarismayi() {
-  const tablo = document.getElementById("puanTablosu");
-  const sirali = Object.entries(puanlar)
-    .filter(([isim]) => ogrenciler.includes(isim))
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 3);
-
-  let icerik = "<h3>🏆 İlk 3</h3><ol>";
-  sirali.forEach(([isim, puan]) => {
-    icerik += `<li><strong>${isim}</strong>: ${puan} puan</li>`;
-  });
-  icerik += "</ol>";
-
-  tablo.innerHTML = icerik;
-  tablo.style.display = "block";
-}
-
-
-</script>
+    // Sözlüğü yükle
+    fetch("https://raw.githubusercontent.com/CanNuhlar/Turkce-Kelime-Listesi/master/turkce_kelime_listesi.txt")
+      .then(r => r.text())
+      .then(t => {
+        sozluk = t.split("\n").map(k => k.trim().toLocaleUpperCase("tr")).filter(k => k.length > 0);
+        console.log("Sözlük yüklendi: ", sozluk.length, "kelime");
+      })
+      .catch(e => console.error("Sözlük yüklenemedi:", e));
+  </script>
 </body>
 </html>
