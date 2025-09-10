@@ -10,8 +10,9 @@
       margin: 0;
       padding: 0;
       display: flex;
-      justify-content: center;
-      align-items: flex-start;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
       min-height: 100vh;
     }
     .kapsayici {
@@ -23,6 +24,13 @@
       width: 95%;
       max-width: 850px;
       text-align: center;
+    }
+    .footer {
+      text-align: center;
+      margin: 20px 0;
+      font-size: 14px;
+      color: #555;
+      font-style: italic;
     }
     textarea, input[type="text"] {
       padding: 6px;
@@ -72,10 +80,10 @@
     .ogrenci:hover {
       transform: scale(1.05);
     }
-    .dogru {
-      background-color: #ffcc80 !important;
+    .puan-verildi {
+      background-color: #81c784 !important;
+      color: white;
       font-weight: bold;
-      box-shadow: 0 0 8px rgba(0,0,0,0.2);
     }
     #harfKutulari {
       display: flex;
@@ -130,29 +138,53 @@
     .ilk-1 { background-color: #ffe082; }
     .ilk-2 { background-color: #e0e0e0; }
     .ilk-3 { background-color: #d7ccc8; }
+
+    /* Modal */
+    #puanModal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+    #puanModal .modal-content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      width: 300px;
+    }
+    #puanModal input {
+      width: 60%;
+      padding: 8px;
+      margin: 10px 0;
+    }
   </style>
 </head>
 <body>
   <div class="kapsayici">
     <div id="girisEkrani">
-      <h3>📝 Öğrenci Adlarını Girin:</h3>
+      <h3>📝 Öğrenci Adlarını Girin 📝</h3>
       <textarea id="ogrenciTextarea" placeholder="Öğrenci isimlerini her satıra bir tane olacak şekilde yazınız."></textarea><br>
-      <button class="btn" onclick="basla()">BAŞLA</button>
+      <button class="btn" onclick="basla()">🏁 BAŞLA 🏁</button>
     </div>
 
     <div id="oyunEkrani" class="hidden">
-      <h2>🎯 Bir Kelime Bir İşlem 🎯</h2>
+      <h2>🔤 Bir Kelime 🔤</h2>
       <div id="harfKutulari"></div>
-      <button class="btn" onclick="harfleriUret()">🔤 Harfleri Üret</button>
-      <button class="btn" onclick="kelimeleriGoster()">📋 Kelimeleri Göster</button>
-      <button class="btn" onclick="togglePuanTablosu()">📊 Puan Tablosunu Göster/Gizle</button>
+      <button class="btn" onclick="harfleriUret()">🔤 Harfleri Üret 🔤</button>
+      <button class="btn" onclick="kelimeleriGoster()">📋 Kelimeleri Göster 📋</button>
+      <button class="btn" onclick="togglePuanTablosu()">🥇🥈🥉 Puan Tablosunu Göster/Gizle 🥉🥈🥇</button>
 
       <div class="ogrenci-listesi" id="ogrenciler"></div>
 
-      <div id="kelimeSonuclari">Kelime sonuçları burada görünecek.</div>
+      <div id="kelimeSonuclari">Verilen harflerle türetilebilecek kelimeler 📋 Kelimeleri Göster 📋 butonuna bastıktan sonra gösterilecek.</div>
 
       <div id="puanTablosu" class="hidden">
-        <h4>📊 Puan Tablosu</h4>
+        <h4>🥇🥈🥉 Puan Tablosunu Göster/Gizle 🥉🥈🥇</h4>
         <div class="ilk-uc-wrapper" id="ilkUc"></div>
         <table>
           <thead><tr><th>İsim</th><th>Puan</th></tr></thead>
@@ -162,12 +194,27 @@
     </div>
   </div>
 
+  <!-- Footer -->
+  <div class="footer">made by İSMAİL AKÇELİK</div>
+
+  <!-- Modal -->
+  <div id="puanModal">
+    <div class="modal-content">
+      <h3 id="puanModalBaslik"></h3>
+      <input type="number" id="puanInput" placeholder="Puan girin" />
+      <br>
+      <button class="btn" onclick="puanGir()">Kaydet</button>
+      <button class="btn" onclick="modalKapat()">İptal</button>
+    </div>
+  </div>
+
   <script>
     const alfabe = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ";
     let ogrenciler = [];
     let puanlar = {};
     let sozluk = [];
     let mevcutHarfler = [];
+    let seciliOgrenci = null;
 
     function basla() {
       const metin = document.getElementById("ogrenciTextarea").value.trim();
@@ -188,12 +235,11 @@
         div.className = "ogrenci";
         div.textContent = isim;
         div.onclick = function () {
-          const harfSayisi = prompt(`${isim} kaç harfli kelime buldu?`);
-          const puan = parseInt(harfSayisi) * 10;
-          if (!isNaN(puan)) {
-            puanlar[isim] += puan;
-            guncellePuanTablosu();
-          }
+          seciliOgrenci = isim;
+          document.getElementById("puanModalBaslik").innerText = `${isim} için puan gir:`;
+          document.getElementById("puanInput").value = "";
+          document.getElementById("puanModal").style.display = "flex";
+          setTimeout(() => document.getElementById("puanInput").focus(), 100);
         };
         ogrenciAlani.appendChild(div);
       });
@@ -201,12 +247,36 @@
       guncellePuanTablosu();
     }
 
+    function puanGir() {
+      const deger = parseInt(document.getElementById("puanInput").value);
+      if (!isNaN(deger)) {
+        puanlar[seciliOgrenci] += deger;
+        const ogrenciKutusu = [...document.getElementsByClassName("ogrenci")]
+          .find(div => div.textContent === seciliOgrenci);
+        if (ogrenciKutusu) ogrenciKutusu.classList.add("puan-verildi");
+        guncellePuanTablosu();
+      }
+      modalKapat();
+    }
+
+    function modalKapat() {
+      document.getElementById("puanModal").style.display = "none";
+    }
+
+    // Enter ile kaydet, Esc ile kapat
+    document.addEventListener("keydown", function(e) {
+      if (document.getElementById("puanModal").style.display === "flex") {
+        if (e.key === "Enter") puanGir();
+        if (e.key === "Escape") modalKapat();
+      }
+    });
+
     function harfleriUret() {
       mevcutHarfler = [];
       for (let i = 0; i < 8; i++) mevcutHarfler.push(alfabe[Math.floor(Math.random() * alfabe.length)]);
       mevcutHarfler.push("*");
       document.getElementById("harfKutulari").innerHTML = mevcutHarfler.map(h => `<div class="box">${h}</div>`).join('');
-      document.getElementById("kelimeSonuclari").textContent = "Kelime sonuçları burada görünecek.";
+      document.getElementById("kelimeSonuclari").textContent = "Verilen harflerle türetilebilecek kelimeler 📋 Kelimeleri Göster 📋 butonuna bastıktan sonra gösterilecek.";
     }
 
     function kelimeOlurMu(kelime, harfler) {
@@ -226,7 +296,7 @@
     }
 
     function kelimeleriGoster() {
-      if (mevcutHarfler.length === 0) return alert("Lütfen önce harfleri üretin!");
+      if (mevcutHarfler.length === 0) return alert("Lütfen önce harfleri üretin.");
       const harfler = mevcutHarfler.map(h => h.toLocaleUpperCase("tr"));
       const bulunan = sozluk.filter(k => k.length >= 4 && kelimeOlurMu(k, harfler)).sort((a,b) => b.length - a.length);
       document.getElementById("kelimeSonuclari").textContent = bulunan.length > 0 ? bulunan.join(", ") : "Uygun kelime bulunamadı.";
