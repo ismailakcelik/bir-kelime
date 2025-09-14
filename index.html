@@ -522,24 +522,31 @@
     }
 
     function guncellePuanTablosu() {
-      const govde = document.getElementById("puanTabloGovde");
-      const ilkUcDiv = document.getElementById("ilkUc");
-      govde.innerHTML = "";
-      ilkUcDiv.innerHTML = "";
-      const sirali = Object.entries(puanlar).sort((a,b) => b[1] - a[1]);
-      sirali.slice(0,3).forEach((entry, index) => {
-        const div = document.createElement("div");
-        div.className = `ilk-uc-kutu ilk-${index+1}`;
-        const madalya = ["🥇", "🥈", "🥉"][index] || "";
-        div.innerHTML = `${madalya}<br>${entry[0]}<br><span style='font-size:13px;'>${entry[1]} puan</span>`;
-        ilkUcDiv.appendChild(div);
-      });
-      sirali.slice(3).forEach(([isim, puan]) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${isim}</td><td>${puan}</td>`;
-        govde.appendChild(tr);
-      });
+  const govde = document.getElementById("puanTabloGovde");
+  const ilkUcDiv = document.getElementById("ilkUc");
+  if (!govde || !ilkUcDiv) return;
+  govde.innerHTML = "";
+  ilkUcDiv.innerHTML = "";
+  const sirali = Object.entries(puanlar).sort((a, b) => b[1] - a[1]);
+  if (sirali.length === 0) return;
+  const uniqueScores = [...new Set(sirali.map(e => e[1]))];
+  const ilkUcPuanlar = uniqueScores.slice(0, 3);
+  ilkUcPuanlar.forEach((puan, index) => {
+    const div = document.createElement("div");
+    div.className = `ilk-uc-kutu ilk-${index + 1}`;
+    const madalya = ["🥇", "🥈", "🥉"][index] || "";
+    const isimler = sirali.filter(e => e[1] === puan).map(e => e[0]);
+    div.innerHTML = `${madalya}<br>${isimler.join("<br>")}<br><span style='font-size:13px;'>${puan} puan</span>`;
+    ilkUcDiv.appendChild(div);
+  });
+  sirali.forEach(([isim, puan]) => {
+    if (!ilkUcPuanlar.includes(puan)) {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${isim}</td><td>${puan}</td>`;
+      govde.appendChild(tr);
     }
+  });
+}
 
     function puanTablosuAc() { document.getElementById("puanTabloModal").style.display = "flex"; }
     function puanTablosuKapat() { document.getElementById("puanTabloModal").style.display = "none"; }
