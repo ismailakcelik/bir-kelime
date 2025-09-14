@@ -166,20 +166,39 @@
       margin: 10px 0;
     }
 
-    /* Kelime kutuları */
-    .kelime-grup {
-      margin: 10px 0;
-      text-align: center;
-    }
-    .kelime-kutu {
-      display: inline-block;
-      padding: 6px 10px;
-      margin: 3px;
-      background: #e0e0e0;
-      border-radius: 6px;
-      font-size: 14px;
-      font-weight: bold;
-    }
+   .kelime-grup {
+  margin: 20px 0;
+  text-align: center;
+  background: #f9f9f9;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.kelime-grup strong {
+  display: block;
+  margin-bottom: 0px;
+  font-size: 18px;
+  color: #2d3436;
+}
+
+.kelime-kutu {
+  display: inline-block;
+  padding: 8px 14px;
+  margin: 5px;
+  background: linear-gradient(135deg, #74b9ff, #0984e3);
+  border-radius: 20px;
+  font-size: 15px;
+  font-weight: bold;
+  color: white;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+  transition: transform 0.2s, background 0.3s;
+}
+
+.kelime-kutu:hover {
+  transform: scale(1.1);
+  background: linear-gradient(135deg, #55efc4, #00cec9);
+}
   </style>
 </head>
 <body>
