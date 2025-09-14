@@ -238,6 +238,46 @@
       text-align: center;
     }
     #timer.timeout { background: #c62828; }
+  /* Açılır/kapanır bilgi kutusu */
+.info-box{
+  margin-top:12px;
+  background:#fffbe6;
+  border:1px solid #f0d98c;
+  border-left:6px solid #f4c542;
+  border-radius:10px;
+  padding:0;
+  text-align:left;
+  color:#333;
+  overflow:hidden;
+}
+
+.info-header{
+  cursor:pointer;
+  padding:10px 14px;
+  font-weight:bold;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:16px;
+}
+
+.info-header:hover{
+  background:#fff3c0;
+}
+
+.info-content{
+  padding:0 14px 10px 14px;
+  display:none;
+}
+
+.info-content ul{
+  margin:0;
+  padding-left:18px;
+}
+.info-content li{
+  margin:4px 0;
+  line-height:1.35;
+}
   </style>
 </head>
 <body>
@@ -246,6 +286,23 @@
       <h3>📝 Katılımcı Adlarını Girin 📝</h3>
       <textarea id="ogrenciTextarea" placeholder="Katılımcı isimlerini her satıra bir tane olacak şekilde yazınız."></textarea><br>
       <button class="btn" onclick="basla()">🏁 BAŞLA 🏁</button>
+      <div class="info-box" id="bk-nasil">
+  <div class="info-header" onclick="toggleInfo('bk-nasil')">
+    🔤 Bir Kelime – Nasıl Oynanır? <span>➕</span>
+  </div>
+  <div class="info-content">
+    <ul>
+      <li>Katılımcı isimlerini her satıra bir katılımcı gelecek şekilde girip <strong>Başla</strong> butonuna basın.</li>
+      <li><strong>Harfleri Üret</strong> ile rastgele harfler görünür.</li>
+      <li>Oyundaki amaç bu harflerle mümkün olduğunca uzun ve geçerli kelimeler türetmektir.</li>
+      <li>* işareti joker harfi temsil etmektedir ve istenilen harf yerine kullanılabilir.</li>
+      <li>Moderatör/Öğretmen, bulunan kelimenin harf sayısına göre puan verir.</li>
+      <li>İsterseniz <strong>Kelimeleri Göster</strong> butonu ile verilen harflerden türetilebilecek kelimelerin listesini görebilirsiniz.</li>
+      <li><strong>Puan Tablosu</strong> ile sıralamayı görüntüleyebilirsiniz.</li>
+      <li>Sağ üstte bulunan sayaçtan 1, 3, 5 ve 10 dakikalık süre başlatabilirsiniz. Seçiler süre her turda yeniden başlar.</li>
+    </ul>
+  </div>
+</div>
     </div>
 
     <div id="oyunEkrani" class="hidden">
@@ -530,6 +587,14 @@
         sozluk = t.split("\n").map(k => k.trim().toLocaleUpperCase("tr")).filter(k => k.length > 0);
       })
       .catch(e => console.error("Sözlük yüklenemedi:", e));
+ function toggleInfo(id){
+  const box = document.getElementById(id);
+  const content = box.querySelector(".info-content");
+  const headerIcon = box.querySelector(".info-header span");
+  const isOpen = content.style.display === "block";
+  content.style.display = isOpen ? "none" : "block";
+  headerIcon.textContent = isOpen ? "➕" : "➖";
+}
   </script>
 </body>
 </html>
