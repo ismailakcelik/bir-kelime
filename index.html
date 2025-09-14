@@ -92,20 +92,20 @@
       flex-wrap: wrap;
       gap: 10px;
       margin-top: 20px;
-      font-size: 40px; /* kutuların temel boyutu buradan gelir */
+      font-size: 40px;
     }
     .box {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.9em;   /* kutu genişliği */
-  height: 1.9em;  /* kutu yüksekliği */
-  font-size: inherit; /* ebeveyn font-size’a bağlı */
-  font-weight: bold;
-  color: #fff;
-  background-color: #3498db;
-  border-radius: 8px;
-}
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.9em;
+      height: 1.9em;
+      font-size: inherit;
+      font-weight: bold;
+      color: #fff;
+      background-color: #3498db;
+      border-radius: 8px;
+    }
     #puanTablosu {
       margin-top: 20px;
     }
@@ -141,7 +141,7 @@
     .ilk-2 { background-color: #e0e0e0; }
     .ilk-3 { background-color: #d7ccc8; }
 
-    /* Modal ortak stil */
+    /* Modal */
     .modal {
       position: fixed;
       top: 0; left: 0;
@@ -166,39 +166,78 @@
       margin: 10px 0;
     }
 
-   .kelime-grup {
-  margin: 20px 0;
-  text-align: center;
-  background: #f9f9f9;
-  border-radius: 12px;
-  padding: 15px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
+    .kelime-grup {
+      margin: 20px 0;
+      text-align: center;
+      background: #f9f9f9;
+      border-radius: 12px;
+      padding: 15px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .kelime-grup strong {
+      display: block;
+      margin-bottom: 0px;
+      font-size: 18px;
+      color: #2d3436;
+    }
+    .kelime-kutu {
+      display: inline-block;
+      padding: 8px 14px;
+      margin: 5px;
+      background: linear-gradient(135deg, #74b9ff, #0984e3);
+      border-radius: 20px;
+      font-size: 15px;
+      font-weight: bold;
+      color: white;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+      transition: transform 0.2s, background 0.3s;
+    }
+    .kelime-kutu:hover {
+      transform: scale(1.1);
+      background: linear-gradient(135deg, #55efc4, #00cec9);
+    }
 
-.kelime-grup strong {
-  display: block;
-  margin-bottom: 0px;
-  font-size: 18px;
-  color: #2d3436;
-}
-
-.kelime-kutu {
-  display: inline-block;
-  padding: 8px 14px;
-  margin: 5px;
-  background: linear-gradient(135deg, #74b9ff, #0984e3);
-  border-radius: 20px;
-  font-size: 15px;
-  font-weight: bold;
-  color: white;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.2);
-  transition: transform 0.2s, background 0.3s;
-}
-
-.kelime-kutu:hover {
-  transform: scale(1.1);
-  background: linear-gradient(135deg, #55efc4, #00cec9);
-}
+    /* Timer (Bir İşlem stilinden) */
+    #timerContainer {
+      position: fixed;
+      top: 30px;
+      right: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+      z-index: 1000;
+    }
+    #timeButtons {
+      display: flex;
+      gap: 6px;
+    }
+    .time-btn {
+      background: #eee;
+      border: 1px solid #aaa;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.2s;
+    }
+    .time-btn:hover { background: #ddd; }
+    .time-btn.active {
+      background: #4CAF50;
+      color: white;
+      border-color: #388E3C;
+    }
+    #timer {
+      background: rgba(0,0,0,0.7);
+      color: #fff;
+      font-size: 20px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-weight: bold;
+      min-width: 110px;
+      text-align: center;
+    }
+    #timer.timeout { background: #c62828; }
   </style>
 </head>
 <body>
@@ -211,20 +250,28 @@
 
     <div id="oyunEkrani" class="hidden">
       <h2>🔤 Bir Kelime 🔤</h2>
+
+      <!-- Timer -->
+      <div id="timerContainer">
+        <div id="timeButtons">
+          <div class="time-btn" onclick="setTimer(1)">1</div>
+          <div class="time-btn" onclick="setTimer(3)">3</div>
+          <div class="time-btn" onclick="setTimer(5)">5</div>
+          <div class="time-btn" onclick="setTimer(10)">10</div>
+        </div>
+        <div id="timer">⏱ 00:00</div>
+      </div>
+
       <div id="harfKutulari"></div>
       <button class="btn" onclick="harfleriUret()">🔤 Harfleri Üret 🔤</button>
       <button class="btn" onclick="kelimeleriGoster()">📋 Kelimeleri Göster 📋</button>
       <button class="btn" onclick="puanTablosuAc()">🥇🥈🥉 Puan Tablosu 🥉🥈🥇</button>
 
       <div class="ogrenci-listesi" id="ogrenciler"></div>
-
       <div id="kelimeSonuclari">Verilen harflerle türetilebilecek kelimeler 📋 Kelimeleri Göster 📋 butonuna bastıktan sonra gösterilecek.</div>
-
-     
     </div>
   </div>
 
-  <!-- Footer -->
   <div class="footer">made by İSMAİL AKÇELİK</div>
 
   <!-- Puan Modal -->
@@ -237,19 +284,21 @@
       <button class="btn" onclick="modalKapat()">İptal</button>
     </div>
   </div>
-<!-- Puan Tablosu Modal -->
-<div id="puanTabloModal" class="modal">
-  <div class="modal-content">
-    <h4>🥇🥈🥉 Puan Tablosu 🥉🥈🥇</h4>
-    <div class="ilk-uc-wrapper" id="ilkUc"></div>
-    <table>
-      <thead><tr><th>İsim</th><th>Puan</th></tr></thead>
-      <tbody id="puanTabloGovde"></tbody>
-    </table>
-    <br>
-    <button class="btn" onclick="puanTablosuKapat()">Kapat</button>
+
+  <!-- Puan Tablosu Modal -->
+  <div id="puanTabloModal" class="modal">
+    <div class="modal-content">
+      <h4>🥇🥈🥉 Puan Tablosu 🥉🥈🥇</h4>
+      <div class="ilk-uc-wrapper" id="ilkUc"></div>
+      <table>
+        <thead><tr><th>İsim</th><th>Puan</th></tr></thead>
+        <tbody id="puanTabloGovde"></tbody>
+      </table>
+      <br>
+      <button class="btn" onclick="puanTablosuKapat()">Kapat</button>
+    </div>
   </div>
-</div>
+
   <!-- Uyarı Modal -->
   <div id="uyariModal" class="modal">
     <div class="modal-content">
@@ -257,14 +306,16 @@
       <button class="btn" onclick="uyariKapat()">Tamam</button>
     </div>
   </div>
-<!-- Geri Al Modal -->
-<div id="geriAlModal" class="modal">
-  <div class="modal-content">
-    <p style="margin-bottom:20px; font-weight:bold;">Bu turda verilen puanı geri almak üzeresiniz.</p>
-    <button class="btn" onclick="puanGeriAl()">Onayla</button>
-    <button class="btn" onclick="document.getElementById('geriAlModal').style.display='none'">İptal</button>
+
+  <!-- Geri Al Modal -->
+  <div id="geriAlModal" class="modal">
+    <div class="modal-content">
+      <p style="margin-bottom:20px; font-weight:bold;">Bu turda verilen puanı geri almak üzeresiniz.</p>
+      <button class="btn" onclick="puanGeriAl()">Onayla</button>
+      <button class="btn" onclick="document.getElementById('geriAlModal').style.display='none'">İptal</button>
+    </div>
   </div>
-</div>
+
   <script>
     const alfabe = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ";
     let ogrenciler = [];
@@ -273,15 +324,15 @@
     let mevcutHarfler = [];
     let seciliOgrenci = null;
     let sonVerilenPuan = {};
+    let timerInterval;
+    let kalanSure = 0;
+    let secilenDakika = 0;
 
     function uyariGoster(mesaj) {
       document.getElementById("uyariMesaj").innerText = mesaj;
       document.getElementById("uyariModal").style.display = "flex";
     }
-
-    function uyariKapat() {
-      document.getElementById("uyariModal").style.display = "none";
-    }
+    function uyariKapat() { document.getElementById("uyariModal").style.display = "none"; }
 
     function basla() {
       const metin = document.getElementById("ogrenciTextarea").value.trim();
@@ -302,21 +353,20 @@
         const div = document.createElement("div");
         div.className = "ogrenci";
         div.textContent = isim;
-       div.onclick = function () {
-  if (div.classList.contains("puan-verildi")) {
-    seciliOgrenci = isim;
-    document.getElementById("geriAlModal").style.display = "flex";
-  } else {
-    seciliOgrenci = isim;
-    document.getElementById("puanModalBaslik").innerText = `${isim} için puan gir:`;
-    document.getElementById("puanInput").value = "";
-    document.getElementById("puanModal").style.display = "flex";
-    setTimeout(() => document.getElementById("puanInput").focus(), 100);
-  }
-};
+        div.onclick = function () {
+          if (div.classList.contains("puan-verildi")) {
+            seciliOgrenci = isim;
+            document.getElementById("geriAlModal").style.display = "flex";
+          } else {
+            seciliOgrenci = isim;
+            document.getElementById("puanModalBaslik").innerText = `${isim} için puan gir:`;
+            document.getElementById("puanInput").value = "";
+            document.getElementById("puanModal").style.display = "flex";
+            setTimeout(() => document.getElementById("puanInput").focus(), 100);
+          }
+        };
         ogrenciAlani.appendChild(div);
       });
-
       guncellePuanTablosu();
     }
 
@@ -333,22 +383,18 @@
       modalKapat();
     }
     function puanGeriAl() {
-  if (seciliOgrenci && sonVerilenPuan[seciliOgrenci] > 0) {
-    puanlar[seciliOgrenci] = Math.max(0, puanlar[seciliOgrenci] - sonVerilenPuan[seciliOgrenci]);
-    sonVerilenPuan[seciliOgrenci] = 0;
-    const ogrenciKutusu = [...document.getElementsByClassName("ogrenci")]
-      .find(div => div.textContent === seciliOgrenci);
-    if (ogrenciKutusu) ogrenciKutusu.classList.remove("puan-verildi");
-    guncellePuanTablosu();
-  }
-  document.getElementById("geriAlModal").style.display = "none";
-}
-
-    function modalKapat() {
-      document.getElementById("puanModal").style.display = "none";
+      if (seciliOgrenci && sonVerilenPuan[seciliOgrenci] > 0) {
+        puanlar[seciliOgrenci] = Math.max(0, puanlar[seciliOgrenci] - sonVerilenPuan[seciliOgrenci]);
+        sonVerilenPuan[seciliOgrenci] = 0;
+        const ogrenciKutusu = [...document.getElementsByClassName("ogrenci")]
+          .find(div => div.textContent === seciliOgrenci);
+        if (ogrenciKutusu) ogrenciKutusu.classList.remove("puan-verildi");
+        guncellePuanTablosu();
+      }
+      document.getElementById("geriAlModal").style.display = "none";
     }
+    function modalKapat() { document.getElementById("puanModal").style.display = "none"; }
 
-    // Enter ile kaydet, Esc ile kapat
     document.addEventListener("keydown", function(e) {
       if (document.getElementById("puanModal").style.display === "flex") {
         if (e.key === "Enter") puanGir();
@@ -358,9 +404,9 @@
         if (e.key === "Enter" || e.key === "Escape") uyariKapat();
       }
       if (document.getElementById("geriAlModal").style.display === "flex") {
-  if (e.key === "Enter") puanGeriAl();
-  if (e.key === "Escape") document.getElementById("geriAlModal").style.display = "none";
-}
+        if (e.key === "Enter") puanGeriAl();
+        if (e.key === "Escape") document.getElementById("geriAlModal").style.display = "none";
+      }
     });
 
     function harfleriUret() {
@@ -369,11 +415,8 @@
       mevcutHarfler.push("*");
       document.getElementById("harfKutulari").innerHTML = mevcutHarfler.map(h => `<div class="box">${h}</div>`).join('');
       document.getElementById("kelimeSonuclari").textContent = "Verilen harflerle türetilebilecek kelimeler 📋 Kelimeleri Göster 📋 butonuna bastıktan sonra gösterilecek.";
-
-      // Yeni harf üretildiğinde öğrencilerin renklerini sıfırla
-      document.querySelectorAll(".ogrenci").forEach(div => {
-        div.classList.remove("puan-verildi");
-      });
+      document.querySelectorAll(".ogrenci").forEach(div => div.classList.remove("puan-verildi"));
+      startTimer();
     }
 
     function kelimeOlurMu(kelime, harfler) {
@@ -399,22 +442,17 @@
       }
       const harfler = mevcutHarfler.map(h => h.toLocaleUpperCase("tr"));
       const bulunan = sozluk.filter(k => k.length >= 4 && kelimeOlurMu(k, harfler));
-      
       if (bulunan.length === 0) {
         document.getElementById("kelimeSonuclari").textContent = "Uygun kelime bulunamadı.";
         return;
       }
-
-      // Harf uzunluğuna göre gruplama
       const gruplar = {};
       bulunan.forEach(k => {
         const len = k.length;
         if (!gruplar[len]) gruplar[len] = [];
         gruplar[len].push(k);
       });
-
       const siraliUzunluklar = Object.keys(gruplar).map(Number).sort((a,b) => b - a);
-
       let html = "";
       siraliUzunluklar.forEach(len => {
         html += `<div class="kelime-grup"><strong>${len} Harfli:</strong><br>`;
@@ -423,7 +461,6 @@
         });
         html += `</div>`;
       });
-
       document.getElementById("kelimeSonuclari").innerHTML = html;
     }
 
@@ -432,9 +469,7 @@
       const ilkUcDiv = document.getElementById("ilkUc");
       govde.innerHTML = "";
       ilkUcDiv.innerHTML = "";
-
       const sirali = Object.entries(puanlar).sort((a,b) => b[1] - a[1]);
-
       sirali.slice(0,3).forEach((entry, index) => {
         const div = document.createElement("div");
         div.className = `ilk-uc-kutu ilk-${index+1}`;
@@ -442,7 +477,6 @@
         div.innerHTML = `${madalya}<br>${entry[0]}<br><span style='font-size:13px;'>${entry[1]} puan</span>`;
         ilkUcDiv.appendChild(div);
       });
-
       sirali.slice(3).forEach(([isim, puan]) => {
         const tr = document.createElement("tr");
         tr.innerHTML = `<td>${isim}</td><td>${puan}</td>`;
@@ -450,28 +484,52 @@
       });
     }
 
-    function puanTablosuAc() {
-  document.getElementById("puanTabloModal").style.display = "flex";
-}
-function puanTablosuKapat() {
-  document.getElementById("puanTabloModal").style.display = "none";
-}
+    function puanTablosuAc() { document.getElementById("puanTabloModal").style.display = "flex"; }
+    function puanTablosuKapat() { document.getElementById("puanTabloModal").style.display = "none"; }
+
+    window.addEventListener("click", function(e) {
+      const modal = document.getElementById("puanTabloModal");
+      if (e.target === modal) puanTablosuKapat();
+    });
+
+    /* Timer JS */
+    function setTimer(minute) {
+      secilenDakika = minute;
+      document.querySelectorAll(".time-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.textContent == minute);
+      });
+    }
+    function startTimer() {
+      if (!secilenDakika) return;
+      clearInterval(timerInterval);
+      kalanSure = secilenDakika * 60;
+      updateTimerDisplay();
+      timerInterval = setInterval(() => {
+        kalanSure--;
+        updateTimerDisplay();
+        if (kalanSure <= 0) {
+          clearInterval(timerInterval);
+          const t = document.getElementById("timer");
+          t.textContent = "⏱ Süre Bitti!";
+          t.classList.add("timeout");
+        }
+      }, 1000);
+    }
+    function updateTimerDisplay() {
+      const t = document.getElementById("timer");
+      const min = String(Math.floor(kalanSure / 60)).padStart(2, '0');
+      const sec = String(kalanSure % 60).padStart(2, '0');
+      t.textContent = `⏱ ${min}:${sec}`;
+      t.classList.remove("timeout");
+    }
 
     // Sözlüğü yükle
     fetch("https://raw.githubusercontent.com/CanNuhlar/Turkce-Kelime-Listesi/master/turkce_kelime_listesi.txt")
       .then(r => r.text())
       .then(t => {
         sozluk = t.split("\n").map(k => k.trim().toLocaleUpperCase("tr")).filter(k => k.length > 0);
-        console.log("Sözlük yüklendi: ", sozluk.length, "kelime");
       })
       .catch(e => console.error("Sözlük yüklenemedi:", e));
-  // dışarı tıklayınca modal kapanır
-window.addEventListener("click", function(e) {
-  const modal = document.getElementById("puanTabloModal");
-  if (e.target === modal) {
-    puanTablosuKapat();
-  }
-});
   </script>
 </body>
 </html>
