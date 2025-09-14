@@ -56,8 +56,9 @@
       border-radius: 6px;
     }
     .ogrenci-listesi {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
       gap: 10px;
       margin-top: 25px;
       max-height: 300px;
@@ -91,19 +92,20 @@
       flex-wrap: wrap;
       gap: 10px;
       margin-top: 20px;
+      font-size: 40px; /* kutuların temel boyutu buradan gelir */
     }
     .box {
-      width: 50px;
-      height: 50px;
-      background-color: #3498db;
-      color: white;
-      font-size: 24px;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 8px;
-    }
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.9em;   /* kutu genişliği */
+  height: 1.9em;  /* kutu yüksekliği */
+  font-size: inherit; /* ebeveyn font-size’a bağlı */
+  font-weight: bold;
+  color: #fff;
+  background-color: #3498db;
+  border-radius: 8px;
+}
     #puanTablosu {
       margin-top: 20px;
     }
@@ -193,20 +195,13 @@
       <div id="harfKutulari"></div>
       <button class="btn" onclick="harfleriUret()">🔤 Harfleri Üret 🔤</button>
       <button class="btn" onclick="kelimeleriGoster()">📋 Kelimeleri Göster 📋</button>
-      <button class="btn" onclick="togglePuanTablosu()">🥇🥈🥉 Puan Tablosunu Göster/Gizle 🥉🥈🥇</button>
+      <button class="btn" onclick="puanTablosuAc()">🥇🥈🥉 Puan Tablosu 🥉🥈🥇</button>
 
       <div class="ogrenci-listesi" id="ogrenciler"></div>
 
       <div id="kelimeSonuclari">Verilen harflerle türetilebilecek kelimeler 📋 Kelimeleri Göster 📋 butonuna bastıktan sonra gösterilecek.</div>
 
-      <div id="puanTablosu" class="hidden">
-        <h4>🥇🥈🥉 Puan Tablosunu Göster/Gizle 🥉🥈🥇</h4>
-        <div class="ilk-uc-wrapper" id="ilkUc"></div>
-        <table>
-          <thead><tr><th>İsim</th><th>Puan</th></tr></thead>
-          <tbody id="puanTabloGovde"></tbody>
-        </table>
-      </div>
+     
     </div>
   </div>
 
@@ -223,7 +218,19 @@
       <button class="btn" onclick="modalKapat()">İptal</button>
     </div>
   </div>
-
+<!-- Puan Tablosu Modal -->
+<div id="puanTabloModal" class="modal">
+  <div class="modal-content">
+    <h4>🥇🥈🥉 Puan Tablosu 🥉🥈🥇</h4>
+    <div class="ilk-uc-wrapper" id="ilkUc"></div>
+    <table>
+      <thead><tr><th>İsim</th><th>Puan</th></tr></thead>
+      <tbody id="puanTabloGovde"></tbody>
+    </table>
+    <br>
+    <button class="btn" onclick="puanTablosuKapat()">Kapat</button>
+  </div>
+</div>
   <!-- Uyarı Modal -->
   <div id="uyariModal" class="modal">
     <div class="modal-content">
@@ -231,7 +238,14 @@
       <button class="btn" onclick="uyariKapat()">Tamam</button>
     </div>
   </div>
-
+<!-- Geri Al Modal -->
+<div id="geriAlModal" class="modal">
+  <div class="modal-content">
+    <p style="margin-bottom:20px; font-weight:bold;">Bu turda verilen puanı geri almak üzeresiniz.</p>
+    <button class="btn" onclick="puanGeriAl()">Onayla</button>
+    <button class="btn" onclick="document.getElementById('geriAlModal').style.display='none'">İptal</button>
+  </div>
+</div>
   <script>
     const alfabe = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ";
     let ogrenciler = [];
@@ -239,6 +253,7 @@
     let sozluk = [];
     let mevcutHarfler = [];
     let seciliOgrenci = null;
+    let sonVerilenPuan = {};
 
     function uyariGoster(mesaj) {
       document.getElementById("uyariMesaj").innerText = mesaj;
@@ -257,6 +272,7 @@
       }
       ogrenciler = metin.split('\n').map(i => i.trim()).filter(i => i);
       puanlar = {};
+      sonVerilenPuan = {};
       document.getElementById("girisEkrani").classList.add("hidden");
       document.getElementById("oyunEkrani").classList.remove("hidden");
 
@@ -267,13 +283,18 @@
         const div = document.createElement("div");
         div.className = "ogrenci";
         div.textContent = isim;
-        div.onclick = function () {
-          seciliOgrenci = isim;
-          document.getElementById("puanModalBaslik").innerText = `${isim} için puan gir:`;
-          document.getElementById("puanInput").value = "";
-          document.getElementById("puanModal").style.display = "flex";
-          setTimeout(() => document.getElementById("puanInput").focus(), 100);
-        };
+       div.onclick = function () {
+  if (div.classList.contains("puan-verildi")) {
+    seciliOgrenci = isim;
+    document.getElementById("geriAlModal").style.display = "flex";
+  } else {
+    seciliOgrenci = isim;
+    document.getElementById("puanModalBaslik").innerText = `${isim} için puan gir:`;
+    document.getElementById("puanInput").value = "";
+    document.getElementById("puanModal").style.display = "flex";
+    setTimeout(() => document.getElementById("puanInput").focus(), 100);
+  }
+};
         ogrenciAlani.appendChild(div);
       });
 
@@ -284,6 +305,7 @@
       const deger = parseInt(document.getElementById("puanInput").value);
       if (!isNaN(deger)) {
         puanlar[seciliOgrenci] += deger;
+        sonVerilenPuan[seciliOgrenci] = deger;
         const ogrenciKutusu = [...document.getElementsByClassName("ogrenci")]
           .find(div => div.textContent === seciliOgrenci);
         if (ogrenciKutusu) ogrenciKutusu.classList.add("puan-verildi");
@@ -291,6 +313,17 @@
       }
       modalKapat();
     }
+    function puanGeriAl() {
+  if (seciliOgrenci && sonVerilenPuan[seciliOgrenci] > 0) {
+    puanlar[seciliOgrenci] = Math.max(0, puanlar[seciliOgrenci] - sonVerilenPuan[seciliOgrenci]);
+    sonVerilenPuan[seciliOgrenci] = 0;
+    const ogrenciKutusu = [...document.getElementsByClassName("ogrenci")]
+      .find(div => div.textContent === seciliOgrenci);
+    if (ogrenciKutusu) ogrenciKutusu.classList.remove("puan-verildi");
+    guncellePuanTablosu();
+  }
+  document.getElementById("geriAlModal").style.display = "none";
+}
 
     function modalKapat() {
       document.getElementById("puanModal").style.display = "none";
@@ -305,6 +338,10 @@
       if (document.getElementById("uyariModal").style.display === "flex") {
         if (e.key === "Enter" || e.key === "Escape") uyariKapat();
       }
+      if (document.getElementById("geriAlModal").style.display === "flex") {
+  if (e.key === "Enter") puanGeriAl();
+  if (e.key === "Escape") document.getElementById("geriAlModal").style.display = "none";
+}
     });
 
     function harfleriUret() {
@@ -394,9 +431,12 @@
       });
     }
 
-    function togglePuanTablosu() {
-      document.getElementById("puanTablosu").classList.toggle("hidden");
-    }
+    function puanTablosuAc() {
+  document.getElementById("puanTabloModal").style.display = "flex";
+}
+function puanTablosuKapat() {
+  document.getElementById("puanTabloModal").style.display = "none";
+}
 
     // Sözlüğü yükle
     fetch("https://raw.githubusercontent.com/CanNuhlar/Turkce-Kelime-Listesi/master/turkce_kelime_listesi.txt")
@@ -406,6 +446,13 @@
         console.log("Sözlük yüklendi: ", sozluk.length, "kelime");
       })
       .catch(e => console.error("Sözlük yüklenemedi:", e));
+  // dışarı tıklayınca modal kapanır
+window.addEventListener("click", function(e) {
+  const modal = document.getElementById("puanTabloModal");
+  if (e.target === modal) {
+    puanTablosuKapat();
+  }
+});
   </script>
 </body>
 </html>
