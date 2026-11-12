@@ -385,14 +385,14 @@ function analyzeWords(){
 function generateLetters(lvl){
   const sp=SPEC[lvl];
   for(let tryCount=0;tryCount<40;tryCount++){
-    let arr=[];
-    for(let i=0;i<sp.v;i++) arr.push(P(VOWELS));
-    for(let i=0;i<sp.c;i++) arr.push(P(CONSONANTS));
-    arr.push("*"); // Joker
+    let base=[];
+    for(let i=0;i<sp.v;i++) base.push(P(VOWELS));
+    for(let i=0;i<sp.c;i++) base.push(P(CONSONANTS));
+    const arr=[...base,"*"];
     const words=sozluk.filter(k=>k.length>=sp.c&&kelimeOlurMu(k,arr));
-    if(words.length>=2) return shuf(arr);
+    if(words.length>=2) return [...shuf(base),"*"];
   }
-  return shuf(["K","A","L","E","M","İ","R","*"]);
+  return [...shuf(["K","A","L","E","M","İ","R"]),"*"];
 }
 
 function draw(){
@@ -419,6 +419,7 @@ $("gen").onclick=()=>{
   letters=generateLetters(level);
   tiles=letters.map(h=>({h}));
   selectedIndices=[];
+  got=new Set();
   round++;
   $("rd").textContent=round;
   $("over").classList.add("hidden");
